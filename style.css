@@ -41,7 +41,7 @@ body {
     min-width: 130px;
 }
 
-.card-slot:empty {
+.card-slot {
     /*This only works if the tag is really empty and there is not even whitespace inside*/
     border: 4px solid #cdcdcd;
     margin: 2px;
@@ -58,4 +58,16 @@ body {
     width: 200px;
     box-shadow: 0 0 0 8px #86989B;
     border-radius: var(--border-radius);
+}
+
+.dragged {
+    opacity: 0.3;
+}
+
+.active-zone {
+    background: lightgreen;
+}
+
+.right-zone {
+    background: aqua;
 }
