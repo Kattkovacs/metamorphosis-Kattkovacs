@@ -3,7 +3,7 @@ initDragAndDrop();
 function initDragAndDrop() {
     shuffleCards();
     let draggables = document.querySelectorAll(".card");
-    let dropZones = document.querySelectorAll(".card-slot");
+    let dropZones = document.querySelectorAll(".card-slot, .mixed-cards");
     initDraggables(draggables);
     initDropZones(dropZones);
 }
@@ -41,11 +41,11 @@ function initDropZone(dropZone) {
     dropZone.addEventListener("drop", dropZoneDropHandler);
 }
 
-function dragStartHandler(event) {
+function dragStartHandler(e) {
     setDropZonesHighlight(true);
     this.classList.add('dragged', 'drag-feedback');
-    event.dataTransfer.setData("type/dragged-box", 'dragged');
-    event.dataTransfer.setData("text/plain", this.textContent.trim());
+    e.dataTransfer.setData("type/dragged-box", 'dragged');
+    e.dataTransfer.setData("text/plain", this.textContent.trim());
     deferredOriginChanges(this, 'drag-feedback');
 }
 
@@ -63,11 +63,14 @@ function dropZoneEnterHandler(e) {
         e.preventDefault();
     }
 }
+
 function dropZoneOverHandler(e) {
     let draggedElement = document.querySelector('.dragged');
     let childImage = draggedElement.firstElementChild;
-    if (e.dataTransfer.types.includes('type/dragged-box') &&
-        (e.currentTarget.dataset.slot === childImage.dataset.status)) {
+    if ((e.dataTransfer.types.includes('type/dragged-box')) &&
+        (e.currentTarget.dataset.slot === childImage.dataset.status) ||
+        (e.dataTransfer.types.includes('type/dragged-box')) &&
+        (e.currentTarget.dataset.animal === childImage.dataset.animal)) {
         this.classList.add("right-zone");
         e.preventDefault();
     }
@@ -79,21 +82,21 @@ function dropZoneLeaveHandler(e) {
         e.currentTarget !== e.relatedTarget.closest('.drop-zone')) {
         this.classList.remove("over-zone");
         this.classList.remove("right-zone");
-        }
+    }
 }
 
 function dropZoneDropHandler(e) {
     let draggedElement = document.querySelector('.dragged');
     let childImage = draggedElement.firstElementChild;
-    if (e.currentTarget.dataset.slot === childImage.dataset.status) {
-        // this.classList.add("right-zone");
+    if ((e.currentTarget.dataset.slot === childImage.dataset.status) ||
+        (e.currentTarget.dataset.animal === childImage.dataset.animal)) {
         e.currentTarget.appendChild(draggedElement);
     }
     e.preventDefault();
-    }
+}
 
 function setDropZonesHighlight(highlight = true) {
-    const dropZones = document.querySelectorAll(".card-slot");
+    const dropZones = document.querySelectorAll(".drop-zone");
     for (const dropZone of dropZones) {
         if (highlight) {
             dropZone.classList.add("active-zone");
@@ -109,3 +112,20 @@ function deferredOriginChanges(origin, dragFeedbackClassName) {
         origin.classList.remove(dragFeedbackClassName);
     });
 }
+
+let arr = [0, 1, 2, 1, 0, 2, 1, 1, 1, 0, 4, 5, 6, 2, 1, 1, 0];
+
+function binaryCleaner(arr) {
+    let bins = [];
+    let notBins = [];
+    for (let i = 0; i < arr.length; i++)
+        if (arr[i] < 2) {
+            bins.push(arr[i]);
+        } else if (arr[i] >= 2) {
+            let index = arr.indexOf(arr[i]);
+            notBins.push(index);
+        }
+    console.log([bins, notBins]);
+}
+
+binaryCleaner(arr);
